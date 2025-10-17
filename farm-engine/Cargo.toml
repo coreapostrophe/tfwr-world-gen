@@ -1,0 +1,8 @@
+[package]
+name = "farm-engine"
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+name = "farm_engine"
+path = "src/lib.rs"
