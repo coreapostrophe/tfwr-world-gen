@@ -1,30 +1,18 @@
-# Rust Template
+# 🌾 TFWR World Gen
 
-A production-ready Rust workspace template with CI/CD and development container support.
+A Rust implementation of the game systems from [TheFarmerWasReplaced](https://store.steampowered.com/app/2060160/The_Farmer_Was_Replaced/). This project aims to replicate the game's mechanics and provide a library for developing and testing algorithms more efficiently.
+
+## About
+
+TheFarmerWasReplaced is a programming puzzle game where you automate a farm using code. This project recreates its core systems to enable algorithm development, testing, and experimentation outside the game environment.
 
 ## Quick Start
 
-1. Click "Use this template" on GitHub
-2. Clone and build:
-   ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
-   cargo build
-   cargo test
-   ```
-
 **Prerequisites:** Rust 1.90.0 or later
 
-## Project Structure
-
-```
-rust-template/
-├── .devcontainer/          # VS Code devcontainer
-├── .github/workflows/      # CI/CD pipeline
-├── crates/                 # Workspace crates
-│   └── foundations/        # Example crate
-├── Cargo.toml              # Workspace configuration
-└── README.md
+```bash
+cargo build
+cargo test
 ```
 
 ## Development
@@ -33,27 +21,10 @@ rust-template/
 # Build
 cargo build
 
-# Test
+# Run tests
 cargo test
 
-# Format
+# Format and lint
 cargo fmt
-
-# Lint
 cargo clippy --all-targets --all-features
-
-# Add new crate
-cargo new --lib crates/your-crate-name
 ```
-
-## Dev Container
-
-Open in VS Code and click "Reopen in Container" for a pre-configured Rust development environment.
-
-## CI/CD
-
-GitHub Actions automatically runs tests, formatting, linting, and security audits on push/PR to `main` and `develop`.
-
----
-
-Happy coding! 🦀

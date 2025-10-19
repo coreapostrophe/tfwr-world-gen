@@ -38,9 +38,17 @@ impl Tile {
     pub fn entity(&self) -> Option<&Entity> {
         self.entity.as_ref()
     }
-    pub fn set_entity(&mut self, entity: Option<Entity>) -> &mut Self {
+    pub fn set_entity(&mut self, entity: Option<Entity>) -> Result<&mut Self, EngineError> {
+        if let Some(ref entity) = entity {
+            if !self.ground_type.can_have_entity(entity) {
+                return Err(EngineError::EntityNotAllowedOnGroundType(
+                    entity.entity_type().clone(),
+                    self.ground_type.clone(),
+                ));
+            }
+        }
         self.entity = entity;
-        self
+        Ok(self)
     }
 }
 

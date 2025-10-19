@@ -34,19 +34,19 @@ impl World {
         })
     }
 
-    pub(crate) fn width(&self) -> usize {
+    pub fn width(&self) -> usize {
         self.width
     }
 
-    pub(crate) fn height(&self) -> usize {
+    pub fn height(&self) -> usize {
         self.height
     }
 
-    pub(crate) fn get_tile(&self, x: usize, y: usize) -> Result<&Tile, EngineError> {
+    pub fn get_tile(&self, x: usize, y: usize) -> Result<&Tile, EngineError> {
         Ok(&self.tiles[(x, y)])
     }
 
-    pub(crate) fn mut_tile(&mut self, x: usize, y: usize) -> Result<&mut Tile, EngineError> {
+    pub fn mut_tile(&mut self, x: usize, y: usize) -> Result<&mut Tile, EngineError> {
         Ok(&mut self.tiles[(x, y)])
     }
 }
