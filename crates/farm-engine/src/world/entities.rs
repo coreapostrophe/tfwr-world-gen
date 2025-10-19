@@ -1,4 +1,4 @@
-use crate::engine::error::EngineError;
+use crate::error::EngineError;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum EntityType {

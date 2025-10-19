@@ -1,7 +1,7 @@
 use thiserror::Error;
 
-use crate::engine::world::entities::EntityType;
-use crate::engine::world::tiles::GroundType;
+use crate::world::entities::EntityType;
+use crate::world::tiles::GroundType;
 
 #[derive(Error, Debug)]
 pub enum EngineError {

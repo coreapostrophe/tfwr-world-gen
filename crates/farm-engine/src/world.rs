@@ -1,6 +1,6 @@
 use ndarray::Array2;
 
-use crate::engine::error::EngineError;
+use crate::error::EngineError;
 
 pub mod entities;
 pub mod tiles;

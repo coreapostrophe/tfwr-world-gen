@@ -1,5 +1,5 @@
-use crate::engine::error::EngineError;
-use crate::engine::world::entities::{Entity, EntityType};
+use crate::error::EngineError;
+use crate::world::entities::{Entity, EntityType};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum GroundType {
@@ -96,7 +96,7 @@ impl TileBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::engine::world::entities::{EntityBuilder, EntityType};
+    use crate::world::entities::{EntityBuilder, EntityType};
 
     use super::*;
 
