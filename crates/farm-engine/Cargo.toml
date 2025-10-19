@@ -6,3 +6,7 @@ rust-version.workspace = true
 [lib]
 name = "farm_engine"
 path = "src/lib.rs"
+
+[dependencies]
+ndarray.workspace = true
+thiserror.workspace = true

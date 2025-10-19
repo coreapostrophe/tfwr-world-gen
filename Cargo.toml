@@ -7,3 +7,5 @@ edition = "2021"
 rust-version = "1.90.0"
 
 [workspace.dependencies]
+ndarray = "0.16.1"
+thiserror = "2.0.17"
