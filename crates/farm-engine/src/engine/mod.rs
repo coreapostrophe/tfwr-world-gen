@@ -1,2 +1,3 @@
 pub mod error;
-pub mod world;
+pub mod game;
+pub(crate) mod world;
