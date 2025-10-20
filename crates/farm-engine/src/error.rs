@@ -15,4 +15,8 @@ pub enum EngineError {
     EntityNotAllowedOnGroundType(EntityType, GroundType),
     #[error("Drone is out of bounds. ({x}, {y})")]
     DroneOutOfBounds { x: usize, y: usize },
+    #[error("Entity is not grown. Please wait for it to grow.")]
+    EntityNotGrown,
+    #[error("Entity is not planted. Please plant it first.")]
+    EntityNotPlanted,
 }

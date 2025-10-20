@@ -10,3 +10,4 @@ path = "src/lib.rs"
 [dependencies]
 ndarray.workspace = true
 thiserror.workspace = true
+chrono.workspace = true

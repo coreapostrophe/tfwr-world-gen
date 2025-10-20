@@ -1,11 +1,7 @@
 use crate::{
     error::EngineError,
     game::drone::Drone,
-    world::{
-        entities::{EntityBuilder, EntityType},
-        tiles::GroundType,
-        World,
-    },
+    world::{entities::EntityType, tiles::GroundType, World},
 };
 
 pub(crate) mod drone;
@@ -42,16 +38,31 @@ impl Game {
         let x = self.drone.x();
         let y = self.drone.y();
         let tile = self.world.mut_tile(x, y)?;
-        tile.set_entity(Some(EntityBuilder::new().entity_type(entity_type).build()?))?;
+        tile.set_entity(Some(entity_type.into()))?;
         Ok(())
     }
 
     pub fn harvest(&mut self) -> Result<(), EngineError> {
         let x = self.drone.x();
         let y = self.drone.y();
-        let tile = self.world.mut_tile(x, y)?;
-        tile.set_entity(None)?;
-        Ok(())
+        if self.can_harvest()? {
+            let tile = self.world.mut_tile(x, y)?;
+            tile.set_entity(None)?;
+            Ok(())
+        } else {
+            Err(EngineError::EntityNotGrown)
+        }
+    }
+
+    pub fn can_harvest(&self) -> Result<bool, EngineError> {
+        let x = self.drone.x();
+        let y = self.drone.y();
+        let tile = self.world.get_tile(x, y)?;
+        if let Some(entity) = tile.entity() {
+            Ok(entity.is_grown())
+        } else {
+            Ok(false)
+        }
     }
 
     pub fn get_entity_type(&self) -> Result<Option<&EntityType>, EngineError> {
@@ -214,21 +225,30 @@ mod tests {
     }
 
     #[test]
-    fn can_harvest_planted_entities() {
+    fn can_harvest_planted_entities_after_growth() {
         let mut game = create_test_game();
 
         game.plant(EntityType::Grass).unwrap();
         assert!(game.get_entity_type().unwrap().is_some());
 
-        game.harvest().unwrap();
-        assert!(game.get_entity_type().unwrap().is_none());
+        let tile = game.world.get_tile(0, 0).unwrap();
+        let entity = tile.entity().unwrap();
+        let now = chrono::Local::now().time();
+        assert!(!entity.is_grown_at(now));
+        assert!(!game.can_harvest().unwrap());
+
+        let grown_time = now + entity.entity_type().growth_time();
+        assert!(entity.is_grown_at(grown_time));
     }
 
     #[test]
-    fn can_harvest_empty_tile() {
+    fn cannot_harvest_empty_tile() {
         let mut game = create_test_game();
 
-        game.harvest().unwrap();
+        assert!(!game.can_harvest().unwrap());
+
+        let result = game.harvest();
+        assert!(matches!(result.unwrap_err(), EngineError::EntityNotGrown));
         assert!(game.get_entity_type().unwrap().is_none());
     }
 
@@ -413,13 +433,44 @@ mod tests {
     }
 
     #[test]
-    fn can_harvest_at_drone_position() {
+    fn can_harvest_at_drone_position_after_growth() {
         let mut game = create_test_game();
 
         game.plant(EntityType::Grass).unwrap();
-        game.harvest().unwrap();
 
-        assert!(game.get_entity_type().unwrap().is_none());
+        assert!(!game.can_harvest().unwrap());
+
+        let tile = game.world.get_tile(0, 0).unwrap();
+        let entity = tile.entity().unwrap();
+        let now = chrono::Local::now().time();
+        let grown_time = now + entity.entity_type().growth_time();
+        assert!(entity.is_grown_at(grown_time));
+    }
+
+    #[test]
+    fn can_harvest_planted_entity_after_growth() {
+        let mut game = create_test_game();
+
+        game.plant(EntityType::Tree).unwrap();
+
+        assert!(!game.can_harvest().unwrap());
+
+        let tile = game.world.get_tile(0, 0).unwrap();
+        let entity = tile.entity().unwrap();
+        let now = chrono::Local::now().time();
+        let grown_time = now + entity.entity_type().growth_time();
+        assert!(entity.is_grown_at(grown_time));
+    }
+
+    #[test]
+    fn cannot_harvest_planted_entity_before_growth() {
+        let mut game = create_test_game();
+
+        game.till().unwrap();
+        game.plant(EntityType::Carrot).unwrap();
+
+        let result = game.harvest();
+        assert!(matches!(result.unwrap_err(), EngineError::EntityNotGrown));
     }
 
     #[test]

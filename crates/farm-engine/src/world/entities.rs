@@ -1,4 +1,6 @@
-use crate::error::EngineError;
+use chrono::{Duration, NaiveTime};
+
+use crate::consts;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum EntityType {
@@ -9,8 +11,27 @@ pub enum EntityType {
     Tree,
 }
 
+impl EntityType {
+    pub fn growth_time(&self) -> Duration {
+        match self {
+            EntityType::Grass => {
+                Duration::milliseconds((consts::GRASS_GROWTH_TIME * 1000.0) as i64)
+            }
+            EntityType::Bush => Duration::milliseconds((consts::BUSH_GROWTH_TIME * 1000.0) as i64),
+            EntityType::Carrot => {
+                Duration::milliseconds((consts::CARROT_GROWTH_TIME * 1000.0) as i64)
+            }
+            EntityType::Pumpkin => {
+                Duration::milliseconds((consts::PUMPKIN_GROWTH_TIME * 1000.0) as i64)
+            }
+            EntityType::Tree => Duration::milliseconds((consts::TREE_GROWTH_TIME * 1000.0) as i64),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Entity {
+    growth_time: NaiveTime,
     entity_type: EntityType,
 }
 
@@ -22,40 +43,27 @@ impl Entity {
         self.entity_type = entity_type;
         self
     }
-}
-
-#[derive(Default)]
-pub struct EntityBuilder {
-    entity_type: Option<EntityType>,
-}
-
-impl EntityBuilder {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn growth_time(&self) -> NaiveTime {
+        self.growth_time
     }
-
-    pub fn entity_type(mut self, entity_type: EntityType) -> Self {
-        self.entity_type = Some(entity_type);
-        self
+    pub fn is_grown(&self) -> bool {
+        chrono::Local::now().time() >= self.growth_time
     }
-
-    pub fn build(self) -> Result<Entity, EngineError> {
-        Ok(Entity {
-            entity_type: self.entity_type.ok_or(EngineError::EntityWithoutType)?,
-        })
+    #[cfg(test)]
+    pub fn is_grown_at(&self, time: NaiveTime) -> bool {
+        time >= self.growth_time
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl From<EntityType> for Entity {
+    fn from(entity_type: EntityType) -> Self {
+        let now = chrono::Local::now().time();
+        let growth_duration = entity_type.growth_time();
+        let growth_time = now + growth_duration;
 
-    #[test]
-    fn can_create_entity() {
-        let entity = EntityBuilder::new()
-            .entity_type(EntityType::Grass)
-            .build()
-            .unwrap();
-        assert_eq!(entity.entity_type(), &EntityType::Grass);
+        Entity {
+            growth_time,
+            entity_type,
+        }
     }
 }

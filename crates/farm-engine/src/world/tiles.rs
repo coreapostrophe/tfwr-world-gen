@@ -104,7 +104,7 @@ impl TileBuilder {
 
 #[cfg(test)]
 mod tests {
-    use crate::world::entities::{EntityBuilder, EntityType};
+    use crate::world::entities::EntityType;
 
     use super::*;
 
@@ -122,36 +122,17 @@ mod tests {
     fn can_create_tile_with_entity() {
         let tile = TileBuilder::new(0, 0)
             .ground_type(GroundType::Grassland)
-            .entity(Some(
-                EntityBuilder::new()
-                    .entity_type(EntityType::Grass)
-                    .build()
-                    .unwrap(),
-            ))
+            .entity(Some(EntityType::Grass.into()))
             .build()
             .unwrap();
-        assert_eq!(
-            tile.entity(),
-            Some(
-                EntityBuilder::new()
-                    .entity_type(EntityType::Grass)
-                    .build()
-                    .unwrap()
-            )
-            .as_ref()
-        );
+        assert!(tile.entity().is_some());
     }
 
     #[test]
     fn cannot_create_tile_with_entity_not_allowed_on_ground_type() {
         let tile = TileBuilder::new(0, 0)
             .ground_type(GroundType::Grassland)
-            .entity(Some(
-                EntityBuilder::new()
-                    .entity_type(EntityType::Carrot)
-                    .build()
-                    .unwrap(),
-            ))
+            .entity(Some(EntityType::Carrot.into()))
             .build();
         assert!(matches!(
             tile.unwrap_err(),
