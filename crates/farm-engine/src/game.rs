@@ -136,6 +136,12 @@ impl Game {
     pub fn get_pos_y(&self) -> usize {
         self.drone.y()
     }
+
+    pub fn clear(&mut self) -> Result<(), EngineError> {
+        self.drone.set_position(0, 0);
+        self.world.clear()?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -480,5 +486,68 @@ mod tests {
         game.till().unwrap();
 
         assert_eq!(game.get_ground_type().unwrap(), &GroundType::Soil);
+    }
+
+    #[test]
+    fn clear_resets_drone_to_origin() {
+        let mut game = create_test_game();
+
+        game.move_drone(Direction::East).unwrap();
+        game.move_drone(Direction::South).unwrap();
+        game.move_drone(Direction::South).unwrap();
+
+        assert_eq!(game.get_pos_x(), 1);
+        assert_eq!(game.get_pos_y(), 2);
+
+        game.clear().unwrap();
+
+        assert_eq!(game.get_pos_x(), 0);
+        assert_eq!(game.get_pos_y(), 0);
+    }
+
+    #[test]
+    fn clear_resets_world_to_initial_state() {
+        let mut game = create_test_game();
+
+        game.till().unwrap();
+
+        game.move_drone(Direction::East).unwrap();
+        game.plant(EntityType::Bush).unwrap();
+
+        game.move_drone(Direction::East).unwrap();
+        game.till().unwrap();
+        game.plant(EntityType::Carrot).unwrap();
+
+        assert_eq!(game.get_ground_type().unwrap(), &GroundType::Soil);
+        assert_eq!(game.get_entity_type().unwrap(), Some(&EntityType::Carrot));
+
+        game.clear().unwrap();
+
+        for row in 0..game.world.width() {
+            for column in 0..game.world.height() {
+                let tile = game.world.get_tile(row, column).unwrap();
+                assert_eq!(tile.ground_type(), &GroundType::Grassland);
+                assert!(tile.entity().is_some());
+                assert_eq!(tile.entity().unwrap().entity_type(), &EntityType::Grass);
+            }
+        }
+    }
+
+    #[test]
+    fn clear_resets_both_drone_and_world() {
+        let mut game = create_test_game();
+
+        game.move_drone(Direction::East).unwrap();
+        game.move_drone(Direction::South).unwrap();
+        game.till().unwrap();
+        game.plant(EntityType::Carrot).unwrap();
+
+        game.clear().unwrap();
+
+        assert_eq!(game.get_pos_x(), 0);
+        assert_eq!(game.get_pos_y(), 0);
+
+        assert_eq!(game.get_ground_type().unwrap(), &GroundType::Grassland);
+        assert_eq!(game.get_entity_type().unwrap(), Some(&EntityType::Grass));
     }
 }
