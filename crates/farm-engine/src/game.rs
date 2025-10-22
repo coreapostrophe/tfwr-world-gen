@@ -523,9 +523,9 @@ mod tests {
 
         game.clear().unwrap();
 
-        for row in 0..game.world.width() {
-            for column in 0..game.world.height() {
-                let tile = game.world.get_tile(row, column).unwrap();
+        for x in 0..game.world.width() {
+            for y in 0..game.world.height() {
+                let tile = game.world.get_tile(x, y).unwrap();
                 assert_eq!(tile.ground_type(), &GroundType::Grassland);
                 assert!(tile.entity().is_some());
                 assert_eq!(tile.entity().unwrap().entity_type(), &EntityType::Grass);

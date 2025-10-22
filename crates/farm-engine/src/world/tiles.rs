@@ -1,6 +1,8 @@
 use crate::error::EngineError;
 use crate::world::entities::{Entity, EntityType};
 
+pub type TileId = usize;
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum GroundType {
     Grassland,
@@ -21,8 +23,7 @@ impl GroundType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Tile {
-    x: usize,
-    y: usize,
+    id: TileId,
     ground_type: GroundType,
     entity: Option<Entity>,
 }
@@ -53,17 +54,15 @@ impl Tile {
 }
 
 pub struct TileBuilder {
-    x: usize,
-    y: usize,
+    id: TileId,
     ground_type: Option<GroundType>,
     entity: Option<Entity>,
 }
 
 impl TileBuilder {
-    pub fn new(x: usize, y: usize) -> Self {
+    pub fn new(id: TileId) -> Self {
         Self {
-            x,
-            y,
+            id,
             ground_type: Default::default(),
             entity: Default::default(),
         }
@@ -94,8 +93,7 @@ impl TileBuilder {
         };
 
         Ok(Tile {
-            x: self.x,
-            y: self.y,
+            id: self.id,
             ground_type,
             entity,
         })
@@ -110,7 +108,7 @@ mod tests {
 
     #[test]
     fn can_create_tile() {
-        let tile = TileBuilder::new(0, 0)
+        let tile = TileBuilder::new(0)
             .ground_type(GroundType::Grassland)
             .build()
             .unwrap();
@@ -120,7 +118,7 @@ mod tests {
 
     #[test]
     fn can_create_tile_with_entity() {
-        let tile = TileBuilder::new(0, 0)
+        let tile = TileBuilder::new(0)
             .ground_type(GroundType::Grassland)
             .entity(Some(EntityType::Grass.into()))
             .build()
@@ -130,7 +128,7 @@ mod tests {
 
     #[test]
     fn cannot_create_tile_with_entity_not_allowed_on_ground_type() {
-        let tile = TileBuilder::new(0, 0)
+        let tile = TileBuilder::new(0)
             .ground_type(GroundType::Grassland)
             .entity(Some(EntityType::Carrot.into()))
             .build();
