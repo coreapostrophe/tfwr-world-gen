@@ -30,6 +30,10 @@ impl Game {
         Self { world, drone }
     }
 
+    pub fn world(&self) -> &World {
+        &self.world
+    }
+
     pub fn get_world_size(&self) -> (usize, usize) {
         (self.world.width(), self.world.height())
     }
